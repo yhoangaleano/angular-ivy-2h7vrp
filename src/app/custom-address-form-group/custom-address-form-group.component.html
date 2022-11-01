@@ -1,0 +1,32 @@
+<hr />
+
+<h2>{{ groupName }}</h2>
+
+<div [formGroupName]="groupName">
+  <div class="mb-12px">
+    <label>Street</label>
+    <input type="text" formControlName="street" />
+  </div>
+
+  <div class="mb-12px">
+    <label></label>
+    <app-custom-input
+      formControlName="city"
+      [required]="true"
+    ></app-custom-input>
+  </div>
+
+  <div class="mb-12px">
+    <label>Neighborhood</label>
+    <input type="text" formControlName="neighborhood" />
+  </div>
+
+  <div>
+    <label>Test</label>
+    <app-custom-input-2
+      [formControl]="childForm | getControlFrom: 'test'"
+      ngDefaultControl
+    ></app-custom-input-2>
+  </div>
+</div>
+<hr />
