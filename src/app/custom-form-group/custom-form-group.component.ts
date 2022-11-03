@@ -8,9 +8,9 @@ import { FormControl, FormGroup, Validators } from '@angular/forms';
 export class CustomFormGroupComponent implements OnInit {
   public form!: FormGroup;
 
-  constructor() {}
-
-  ngOnInit() {}
+  ngOnInit() {
+    this.createForm();
+  }
 
   public createForm(): FormGroup {
     this.form = new FormGroup({

@@ -1,37 +1,59 @@
-import { AfterViewInit, Component, OnInit, ViewChild } from '@angular/core';
-import { FormControl, FormGroup, Validators } from '@angular/forms';
-import { CustomFormGroupComponent } from '../custom-form-group/custom-form-group.component';
+import { Component, OnInit, ViewChild } from '@angular/core';
+import { FormArray, FormControl, FormGroup, NgForm, Validators } from '@angular/forms';
+import { CustomAddressFormGroupComponent } from '../custom-address-form-group/custom-address-form-group.component';
 
 @Component({
   selector: 'app-principal-form',
   templateUrl: './principal-form.component.html',
 })
 export class PrincipalFormComponent implements OnInit {
-  @ViewChild(CustomFormGroupComponent, { static: true })
-  public customFormGroupComponent!: CustomFormGroupComponent;
 
-  public form: FormGroup;
+  @ViewChild('formRef')
+  public formRef!: NgForm;
 
-  constructor() {}
+  public form!: FormGroup;
+  public form2!: FormGroup;
+
+  @ViewChild('address3')
+  public addressForm!: CustomAddressFormGroupComponent;
 
   ngOnInit() {
     this.form = this.createForm();
+    this.form2 = this.createForm2();
   }
 
   public createForm(): FormGroup {
     return new FormGroup({
       name: new FormControl(''),
-      lastName: new FormControl(null, [Validators.required]),
-      age: new FormControl(null, [
-        Validators.required,
-        Validators.min(18),
-        Validators.max(100),
-      ]),
-      attendant: this.customFormGroupComponent.createForm(),
+      test: new FormControl(''),
     });
   }
 
+  public createForm2(): FormGroup {
+    return new FormGroup({
+      name: new FormControl(null, { nonNullable: true }),
+      address2: new FormGroup({}),
+    });
+  }
+
+  resetForm() {
+    this.formRef.resetForm();
+  }
+
+
   submit() {
     console.log(this.form.value);
+  }
+
+  submit2() {
+    console.log(this.form2.value);
+  }
+
+  submit3() {
+    this.addressForm.formRef.onSubmit(new SubmitEvent('submit'));
+  }
+
+  resetForm3() {
+    this.addressForm.formRef.resetForm();
   }
 }

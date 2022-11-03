@@ -12,10 +12,10 @@ import {
   selector: 'app-custom-input',
   template: `
     <p>
-      custom input: 
+      custom input:
       <input
         #i
-        (input)="onInputChange(i.value)" 
+        (input)="onInputChange(i.value)"
         (blur)="onInputBlur($event)"
         type="text"
         [formControl]="input"
@@ -28,7 +28,7 @@ import {
     inner input value: {{ i.value }}
     </p>
 
-   
+
   `,
   providers: [
     {
@@ -42,7 +42,7 @@ export class CustomInputComponent implements OnInit, ControlValueAccessor {
   @Input() public disabled: boolean;
   @Input() public required: boolean;
 
-  input: FormControl;
+  input!: FormControl;
 
   public onModelChange!: Function;
   public onModelTouched!: Function;
@@ -66,7 +66,7 @@ export class CustomInputComponent implements OnInit, ControlValueAccessor {
     this.onModelTouched();
   }
 
-  public onInputChange(value): void {
+  public onInputChange(value: unknown): void {
     this.onModelTouched();
     this.onModelChange(value);
   }

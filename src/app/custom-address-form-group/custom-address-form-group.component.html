@@ -2,7 +2,14 @@
 
 <h2>{{ groupName }}</h2>
 
-<div [formGroupName]="groupName">
+<form
+  nestableForm
+  [formGroup]="form"
+  [formGroupDirective]="formRef"
+  [nestedControlName]="groupName"
+  #formRef="ngForm"
+>
+  <!-- <div [formGroupName]="groupName"> -->
   <div class="mb-12px">
     <label>Street</label>
     <input type="text" formControlName="street" />
@@ -21,12 +28,14 @@
     <input type="text" formControlName="neighborhood" />
   </div>
 
-  <div>
-    <label>Test</label>
+  <div class="mb-12px">
+    <label>Address Cellphone</label>
     <app-custom-input-2
-      [formControl]="childForm | getControlFrom: 'test'"
-      ngDefaultControl
+      controlName="cellphone"
+      [required]="true"
     ></app-custom-input-2>
   </div>
-</div>
+</form>
 <hr />
+
+<h2>{{ groupName }} submitted: {{ formRef.submitted }}</h2>

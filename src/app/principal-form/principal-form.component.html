@@ -1,10 +1,66 @@
-<form [formGroup]="form" (ngSubmit)="submit()">
+<form
+  nestableForm
+  [formGroup]="form"
+  [formGroupDirective]="formRef"
+  [isRoot]="true"
+  (ngSubmit)="submit()"
+  #formRef="ngForm"
+>
   <app-custom-input formControlName="name" [required]="true"></app-custom-input>
+
+  <div>
+	  Test: <input name="test" formControlName="test">
+	 </div>
 
   <app-custom-form-group></app-custom-form-group>
 
-  <app-custom-form-group-2 groupName="attendant2"></app-custom-form-group-2>
+  <h2>Principal submitted: {{ formRef.submitted }}</h2>
 
   <button type="submit">Enviar</button>
   <button type="reset">Reset</button>
+
+  {{ form.valid }}
 </form>
+
+<br />
+<br />
+<br />
+
+------------------------------------------
+
+<form
+  [formGroup]="form2"
+  nestableForm
+  rootNestableForm="true"
+  [formGroupDirective]="form2Ref"
+  (ngSubmit)="submit2()"
+  #form2Ref="ngForm"
+>
+  Hola
+  <app-custom-input formControlName="name" [required]="true"></app-custom-input>
+
+  <app-custom-address-form-group
+    groupName="address2"
+  ></app-custom-address-form-group>
+
+  <button type="submit">Enviar</button>
+  <button type="reset">Reset</button>
+
+  {{ form.valid }}
+
+  <p>Address isValid: {{ form2.get("address2")?.valid }}</p>
+  <p>
+    Address street isValid: {{ form2.get("address2")?.get("street")?.touched }}
+  </p>
+  <p>Address isDirty: {{ form2.get("address2")?.dirty }}</p>
+</form>
+
+<br />
+<br />
+<br />
+
+------------------------------------------
+
+<app-custom-address-form-group #address3></app-custom-address-form-group>
+<button type="button" (click)="submit3()">Submit address</button>
+<button type="reset" (click)="resetForm3()">Reset address</button>

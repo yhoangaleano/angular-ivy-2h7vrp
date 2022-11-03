@@ -1,8 +1,14 @@
 <hr />
 
-<h2>Address </h2>
+<h2>Attendant</h2>
 
-<form [formGroup]="form">
+<form
+  nestableForm
+  [formGroup]="form"
+  [formGroupDirective]="formRef"
+  nestedControlName="attendant"
+  #formRef="ngForm"
+>
   <div class="mb-12px">
     <label>Attendant Name</label>
     <input type="text" formControlName="attendantName" />
@@ -18,5 +24,19 @@
     <label>Attendant Age</label>
     <input type="number" formControlName="attendantAge" />
   </div>
+
+  <div class="mb-12px">
+    <label>Attendant Cellphone</label>
+    <app-custom-input-2
+      controlName="cellphone"
+      [required]="true"
+    ></app-custom-input-2>
+  </div>
+
+  <div>
+    <app-custom-address-form-group></app-custom-address-form-group>
+  </div>
 </form>
 <hr />
+
+<h2>Attendant submitted: {{ formRef.submitted }}</h2>
