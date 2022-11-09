@@ -1,4 +1,12 @@
-import { Component, forwardRef, Input, OnInit } from '@angular/core';
+import {
+  AfterViewInit,
+  Component,
+  forwardRef,
+  Injector,
+  Input,
+  OnInit,
+  ChangeDetectorRef,
+} from '@angular/core';
 
 import {
   NG_VALUE_ACCESSOR,
@@ -6,6 +14,7 @@ import {
   FormBuilder,
   FormControl,
   Validators,
+  NgControl,
 } from '@angular/forms';
 
 @Component({
@@ -19,16 +28,10 @@ import {
         (blur)="onInputBlur($event)"
         type="text"
         [formControl]="input"
-      >
+      />
     </p>
 
-    <show-errors [control]="input"></show-errors>
-
-    <p>
-    inner input value: {{ i.value }}
-    </p>
-
-
+    <p>inner input value: {{ input.value }}</p>
   `,
   providers: [
     {
@@ -38,7 +41,9 @@ import {
     },
   ],
 })
-export class CustomInputComponent implements OnInit, ControlValueAccessor {
+export class CustomInputComponent
+  implements OnInit, AfterViewInit, ControlValueAccessor
+{
   @Input() public disabled: boolean;
   @Input() public required: boolean;
 
@@ -47,18 +52,33 @@ export class CustomInputComponent implements OnInit, ControlValueAccessor {
   public onModelChange!: Function;
   public onModelTouched!: Function;
 
-  constructor(private fb: FormBuilder) {
+  constructor(
+    private fb: FormBuilder,
+    private injector: Injector,
+    private readonly cd: ChangeDetectorRef
+  ) {
     this.disabled = false;
     this.required = false;
   }
 
   ngOnInit() {
-    this.input = this.fb.control('', {
-      validators: [Validators.maxLength(12)],
-    });
+    this.input = this.fb.control('');
+  }
 
-    if (this.required) {
-      this.input.addValidators(Validators.required);
+  public ngAfterViewInit(): void {
+    const ngControl = this.injector.get(NgControl);
+    const control = ngControl.control!;
+    let myValidators = [Validators.maxLength(12)];
+    let validators = control.validator
+      ? [control.validator, ...myValidators]
+      : myValidators;
+
+    control.setValidators(validators);
+
+    if (control.value) {
+      control.markAsTouched();
+      control.updateValueAndValidity();
+      this.cd.detectChanges();
     }
   }
 
@@ -79,11 +99,16 @@ export class CustomInputComponent implements OnInit, ControlValueAccessor {
     this.onModelTouched = fn;
   }
 
-  public setDisabledState(isDisabled: boolean): void {
-    this.disabled = isDisabled;
+  public setDisabledState(disabled: boolean): void {
+    if (disabled) {
+      this.input.disable();
+    } else {
+      this.input.enable();
+    }
   }
 
   writeValue(v: unknown) {
     this.input.setValue(v);
+    this.cd.detectChanges();
   }
 }

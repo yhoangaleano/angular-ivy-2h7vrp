@@ -1,0 +1,63 @@
+<form [formGroup]="form" (ngSubmit)="submit()" #formRef="ngForm">
+  <fieldset>
+    <legend>Personal Form</legend>
+
+    <div>
+      <custom-native-input label="Name" formControlName="name"></custom-native-input>
+      <show-errors [control]="form | getControlFrom: 'name'"></show-errors>
+    </div>
+
+    <div>
+      <label>Age:</label>
+      <input name="age" formControlName="age" />
+      <show-errors [control]="form | getControlFrom: 'age'"></show-errors>
+    </div>
+
+    <br>
+
+    <div>
+      <custom-native-form-address
+        formControlName="address"
+      ></custom-native-form-address>
+      <show-errors [control]="form | getControlFrom: 'address'"></show-errors>
+    </div>
+
+    <br>
+
+    <div>
+      <custom-native-form-attendant
+        formControlName="attendant"
+      ></custom-native-form-attendant>
+      <show-errors [control]="form | getControlFrom: 'attendant'"></show-errors>
+    </div>
+
+    <br>
+    <br>
+
+    <button type="submit">Enviar</button>
+    <button type="button" (click)="resetForm()">Reset</button>
+  </fieldset>
+</form>
+
+<br />
+<br />
+<br />
+
+----------------------------------------------------
+
+<h1>Extra information</h1>
+
+----------------------------------------------------
+
+<h2>Form submitted: {{ formRef.submitted }}</h2>
+<h2>Form isValid: {{ form.valid }}</h2>
+
+<hr />
+<h2>Name isValid: {{ form.get("name")?.valid }}</h2>
+<h2>Name touched: {{ form.get("name")?.touched }}</h2>
+<h2>Name dirty: {{ form.get("name")?.dirty }}</h2>
+
+<hr />
+<h2>Address isValid: {{ form.get("address")?.valid }}</h2>
+<h2>Address touched: {{ form.get("address")?.touched }}</h2>
+<h2>Address dirty: {{ form.get("address")?.dirty }}</h2>

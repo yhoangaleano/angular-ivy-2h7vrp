@@ -12,6 +12,7 @@ import { CustomAddressFormGroupComponent } from './custom-address-form-group/cus
 import { CustomInput2Component } from './custom-input-2/custom-input-2.component';
 import { GetControlFromPipe } from './get-control-from.pipe';
 import { NestableFormDirective } from './nestable-form.directive';
+import { controlAccessorComponents } from './control-accessor';
 
 @NgModule({
   imports: [BrowserModule, ReactiveFormsModule, FormsModule],
@@ -26,6 +27,8 @@ import { NestableFormDirective } from './nestable-form.directive';
     ShowErrorsComponent,
     GetControlFromPipe,
     NestableFormDirective,
+
+    ...controlAccessorComponents
   ],
   bootstrap: [AppComponent],
 })

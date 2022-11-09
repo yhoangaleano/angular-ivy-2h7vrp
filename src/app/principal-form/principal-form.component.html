@@ -1,4 +1,4 @@
-<form
+<!-- <form
   nestableForm
   [formGroup]="form"
   [formGroupDirective]="formRef"
@@ -8,9 +8,7 @@
 >
   <app-custom-input formControlName="name" [required]="true"></app-custom-input>
 
-  <div>
-	  Test: <input name="test" formControlName="test">
-	 </div>
+  <div>Test: <input name="test" formControlName="test" /></div>
 
   <app-custom-form-group></app-custom-form-group>
 
@@ -20,7 +18,7 @@
   <button type="reset">Reset</button>
 
   {{ form.valid }}
-</form>
+</form> -->
 
 <br />
 <br />
@@ -37,16 +35,57 @@
   #form2Ref="ngForm"
 >
   Hola
-  <app-custom-input formControlName="name" [required]="true"></app-custom-input>
+  <app-custom-input formControlName="name"></app-custom-input>
+
+
+  <h3>Add Course Lessons:</h3>
+  <div class="add-lessons-form">
+    <ng-container formArrayName="lessons">
+      <ng-container *ngFor="let lessonForm of lessonsControls; let i = index">
+        <div class="lesson-form-row" [formGroup]="lessonForm">
+
+          <app-custom-input
+            formControlName="title"
+            [required]="true"
+          ></app-custom-input>
+
+          <show-errors
+            [control]="lessonForm | getControlFrom: 'title'"
+          ></show-errors>
+
+          <!-- <app-custom-input
+            formControlName="level"
+            [required]="true"
+          ></app-custom-input> -->
+
+          <div class="mb-12px">
+            <label>Level</label>
+            <app-custom-input-2
+              controlName="level"
+              [required]="true"
+              label="hola"
+            ></app-custom-input-2>
+          </div>
+
+          <button type="button" class="delete-btn" (click)="deleteLesson(i)">
+            Delete lesson
+          </button>
+        </div>
+      </ng-container>
+    </ng-container>
+
+    <button type="button" (click)="addLesson()">Add lesson</button>
+  </div>
 
   <app-custom-address-form-group
     groupName="address2"
   ></app-custom-address-form-group>
 
+
   <button type="submit">Enviar</button>
   <button type="reset">Reset</button>
 
-  {{ form.valid }}
+  <p>Form 2 isValid: {{ form2.valid }}</p>
 
   <p>Address isValid: {{ form2.get("address2")?.valid }}</p>
   <p>
@@ -60,7 +99,18 @@
 <br />
 
 ------------------------------------------
-
+<!--
 <app-custom-address-form-group #address3></app-custom-address-form-group>
 <button type="button" (click)="submit3()">Submit address</button>
 <button type="reset" (click)="resetForm3()">Reset address</button>
+
+<br />
+<br />
+<br />
+
+------------------------------------------
+
+<app-custom-input [formControl]="formControl"></app-custom-input>
+<show-errors [control]="formControl"></show-errors>
+
+<p>FormControl isValid: {{ formControl.valid }}</p> -->

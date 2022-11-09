@@ -12,6 +12,8 @@ import {
   FormGroup,
   AbstractControl,
   FormGroupDirective,
+  FormArray,
+  FormControl,
 } from '@angular/forms';
 import { Subject, takeUntil } from 'rxjs';
 
@@ -73,6 +75,7 @@ export class NestableFormDirective implements OnInit, OnDestroy {
   private resolveAndRegister(): void {
     this.currentForm = this.resolveCurrentForm();
     this.registerToParent();
+    this.listenSubmit();
   }
 
   private resolveCurrentForm(): FormGroup {
@@ -99,8 +102,19 @@ export class NestableFormDirective implements OnInit, OnDestroy {
     this.parentForm.formGroupDirective?.ngSubmit
       .pipe(takeUntil(this.unSubscribe$))
       .subscribe({
-        next: () =>
-          this.formGroupDirective?.onSubmit(new SubmitEvent('submit')),
+        next: () => {
+          this.formGroupDirective?.onSubmit(new SubmitEvent('submit'));
+        },
+      });
+  }
+
+  private listenSubmit(): void {
+    this.formGroupDirective?.ngSubmit
+      .pipe(takeUntil(this.unSubscribe$))
+      .subscribe({
+        next: () => {
+          this.validateForm(this.formGroup);
+        },
       });
   }
 
@@ -112,5 +126,33 @@ export class NestableFormDirective implements OnInit, OnDestroy {
       resetFormFunc.apply(this.parentForm.formGroupDirective, arguments);
       this.formGroupDirective?.resetForm();
     };
+  }
+
+  public validateForm(formGroup: FormGroup): void {
+    Object.keys(formGroup.controls).forEach((field) => {
+      console.log(field);
+      const control = formGroup.get(field);
+      if (control instanceof FormArray) {
+        for (const control1 of control.controls) {
+          if (control1 instanceof FormControl) {
+            this.validateControl(control1);
+          }
+          if (control1 instanceof FormGroup) {
+            this.validateForm(control1);
+          }
+        }
+        this.validateControl(control);
+      }
+      if (control instanceof FormControl) {
+        this.validateControl(control);
+      } else if (control instanceof FormGroup) {
+        this.validateForm(control);
+      }
+    });
+  }
+
+  public validateControl(control: FormControl | FormArray): void {
+    control.markAsTouched();
+    control.updateValueAndValidity();
   }
 }

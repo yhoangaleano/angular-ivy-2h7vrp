@@ -1,0 +1,36 @@
+<form [formGroup]="form" #formRef="ngForm">
+  <fieldset>
+    <legend>Attendant Component Form</legend>
+
+    <div class="mb-12px">
+      <label>Name</label>
+      <input type="text" formControlName="name" (blur)="onTouched()" />
+      <show-errors [control]="form | getControlFrom: 'name'"></show-errors>
+    </div>
+
+    <div class="mb-12px">
+      <custom-native-input
+        label="Last Name"
+        formControlName="lastName"
+        (onBlur)="onTouched()"
+      ></custom-native-input>
+      <show-errors [control]="form | getControlFrom: 'lastName'"></show-errors>
+    </div>
+
+    <div class="mb-12px">
+      <label>Age</label>
+      <input type="number" formControlName="age" (blur)="onTouched()" />
+      <show-errors [control]="form | getControlFrom: 'age'"></show-errors>
+    </div>
+
+    <br>
+
+    <div>
+      <custom-native-form-address
+        formControlName="address"
+        (onBlur)="onTouched()"
+      ></custom-native-form-address>
+      <show-errors [control]="form | getControlFrom: 'address'"></show-errors>
+    </div>
+  </fieldset>
+</form>

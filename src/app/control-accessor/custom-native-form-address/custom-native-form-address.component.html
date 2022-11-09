@@ -1,0 +1,29 @@
+<form [formGroup]="form" #formRef="ngForm">
+  <fieldset>
+    <legend>Address Component Form</legend>
+
+    <div class="mb-12px">
+      <label>Street</label>
+      <input type="text" formControlName="street" (blur)="onTouched()" />
+      <show-errors [control]="form | getControlFrom: 'street'"></show-errors>
+    </div>
+
+    <div class="mb-12px">
+      <label></label>
+      <custom-native-input
+        label="City"
+        formControlName="city"
+        (onBlur)="onTouched($event)"
+      ></custom-native-input>
+      <show-errors [control]="form | getControlFrom: 'city'"></show-errors>
+    </div>
+
+    <div class="mb-12px">
+      <label>Neighborhood</label>
+      <input type="text" formControlName="neighborhood" (blur)="onTouched()" />
+      <show-errors
+        [control]="form | getControlFrom: 'neighborhood'"
+      ></show-errors>
+    </div>
+  </fieldset>
+</form>

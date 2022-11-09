@@ -1,5 +1,5 @@
 // show-errors.component.ts
-import { Component, Input, OnDestroy, OnInit } from '@angular/core';
+import { Component, Input, OnDestroy, OnInit, Optional } from '@angular/core';
 import {
   AbstractControlDirective,
   AbstractControl,
@@ -23,8 +23,8 @@ import { Subject, takeUntil } from 'rxjs';
 })
 export class ShowErrorsComponent implements OnInit, OnDestroy {
   private static readonly errorMessages: { [key: string]: Function } = {
-    required: (params: { message: unknown }) =>
-      'This field is required' + params,
+    required: () =>
+      'This field is required',
     minlength: (params: { requiredLength: unknown }) =>
       'The min number of characters is ' + params.requiredLength,
     maxlength: (params: { requiredLength: unknown }) =>
@@ -33,6 +33,8 @@ export class ShowErrorsComponent implements OnInit, OnDestroy {
       'The required pattern is: ' + params.requiredPattern,
     years: (params: { message: unknown }) => params.message,
     countryCity: (params: { message: unknown }) => params.message,
+    address: () => 'Address is required',
+    attendant: () => 'Attendant is required',
     uniqueName: (params: { message: unknown }) => params.message,
     telephoneNumbers: (params: { message: unknown }) => params.message,
     telephoneNumber: (params: { message: unknown }) => params.message,
@@ -43,13 +45,13 @@ export class ShowErrorsComponent implements OnInit, OnDestroy {
 
   private readonly unSubscribe$: Subject<void> = new Subject();
 
-  constructor(public formGroupDirective: FormGroupDirective) {}
+  constructor(@Optional() public formGroupDirective?: FormGroupDirective) {}
 
   ngOnInit(): void {
-    this.formGroupDirective.ngSubmit
+    this.formGroupDirective?.ngSubmit
       .pipe(takeUntil(this.unSubscribe$))
       .subscribe((_) => {
-        console.log(this.formGroupDirective.form.value);
+        console.warn(this.formGroupDirective?.form.value);
       });
   }
 
@@ -63,7 +65,7 @@ export class ShowErrorsComponent implements OnInit, OnDestroy {
       ((this.control &&
         this.control.errors &&
         (this.control.dirty || this.control.touched)) ||
-        this.formGroupDirective.submitted) ??
+        this.formGroupDirective?.submitted) ??
       false
     );
   }
