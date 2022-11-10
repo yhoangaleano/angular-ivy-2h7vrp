@@ -20,40 +20,35 @@ import {
   ValidationErrors,
   FormGroupDirective,
   NgForm,
-  FormArray,
 } from '@angular/forms';
 import { map, Subject, takeUntil } from 'rxjs';
 
-// Configs
-import { checkNameExists } from '../configs';
-import { HobbiesType } from '../custom-native-form-hobbies';
-
 // Models
-import { AttendantFormType, AttendantType } from './models';
+import { HobbiesFormType, HobbiesType } from './models';
 
 @Component({
-  selector: 'custom-native-form-attendant',
-  templateUrl: './custom-native-form-attendant.component.html',
+  selector: 'custom-native-form-hobbies',
+  templateUrl: './custom-native-form-hobbies.component.html',
   providers: [
     {
       provide: NG_VALUE_ACCESSOR,
-      useExisting: forwardRef(() => CustomNativeFormAttendantComponent),
+      useExisting: forwardRef(() => CustomNativeFormHobbiesComponent),
       multi: true,
     },
     {
       provide: NG_VALIDATORS,
-      useExisting: forwardRef(() => CustomNativeFormAttendantComponent),
+      useExisting: forwardRef(() => CustomNativeFormHobbiesComponent),
       multi: true,
     },
   ],
 })
-export class CustomNativeFormAttendantComponent
+export class CustomNativeFormHobbiesComponent
   implements OnInit, OnDestroy, ControlValueAccessor
 {
   @Input() public touchedChangingInput: boolean;
 
   @Output() public onBlur: EventEmitter<Event>;
-  @Output() public onInput: EventEmitter<Partial<AttendantType> | null>;
+  @Output() public onInput: EventEmitter<Partial<HobbiesType> | null>;
 
   @ViewChild('formRef')
   public formRef!: NgForm;
@@ -63,18 +58,10 @@ export class CustomNativeFormAttendantComponent
   public form!: FormGroup;
   public onTouched!: Function;
 
-  get hobbiesFormArray() {
-    return this.form.get('hobbies') as FormArray;
-  }
-
-  get hobbiesFormControls() {
-    return (this.form.controls["hobbies"] as FormArray).controls as Array<FormControl>;
-  }
-
   constructor(@Optional() public formGroupDirective?: FormGroupDirective) {
     this.touchedChangingInput = false;
     this.onBlur = new EventEmitter<Event>();
-    this.onInput = new EventEmitter<Partial<AttendantType> | null>();
+    this.onInput = new EventEmitter<Partial<HobbiesType> | null>();
     this.unSubscribe$ = new Subject();
   }
 
@@ -94,7 +81,7 @@ export class CustomNativeFormAttendantComponent
     this.onBlur.emit(event);
   }
 
-  public onInputChange(value: Partial<AttendantType> | null): void {
+  public onInputChange(value: Partial<HobbiesType> | null): void {
     if (this.touchedChangingInput) {
       this.onTouched();
     }
@@ -102,18 +89,18 @@ export class CustomNativeFormAttendantComponent
   }
 
   public registerOnChange(
-    fn: (val: Partial<AttendantType> | null) => void
+    fn: (val: Partial<HobbiesType> | null) => void
   ): void {
     this.form.valueChanges
       .pipe(
         takeUntil(this.unSubscribe$),
         map((value) => {
-          return this.createAttendant(value);
+          return this.createHobbies(value);
         })
       )
-      .subscribe((attendant) => {
-        fn(attendant);
-        this.onInputChange(attendant);
+      .subscribe((hobbies) => {
+        fn(hobbies);
+        this.onInputChange(hobbies);
       });
   }
 
@@ -122,34 +109,29 @@ export class CustomNativeFormAttendantComponent
   }
 
   public createForm() {
-    this.form = new FormGroup<AttendantFormType>({
+    this.form = new FormGroup<HobbiesFormType>({
       name: new FormControl(null, {
         validators: Validators.required,
-        asyncValidators: [checkNameExists],
         nonNullable: true,
       }),
-      lastName: new FormControl(null, {
-        validators: Validators.required,
+      description: new FormControl(null, {
+        validators: [Validators.required, Validators.minLength(6)],
         nonNullable: true,
       }),
-      age: new FormControl(null, {
-        validators: Validators.required,
+      order: new FormControl(null, {
+        validators: [
+          Validators.required,
+          Validators.min(1),
+          Validators.max(10),
+        ],
         nonNullable: true,
       }),
-      address: new FormControl(null, {
-        validators: Validators.required,
-        nonNullable: true,
-      }),
-      hobbies: new FormArray<FormControl<HobbiesType | null>>(
-        [],
-        [Validators.required]
-      ),
     });
   }
 
-  writeValue(value: AttendantType | null): void {
-    const attendant = this.createAttendant(value);
-    this.form.patchValue(attendant, { emitEvent: false });
+  writeValue(value: HobbiesType | null): void {
+    const hobbies = this.createHobbies(value);
+    this.form.patchValue(hobbies, { emitEvent: false });
   }
 
   setDisabledState(disabled: boolean): void {
@@ -160,27 +142,23 @@ export class CustomNativeFormAttendantComponent
     }
   }
 
-  private createAttendant(value: Partial<AttendantType> | null): AttendantType {
+  private createHobbies(value: Partial<HobbiesType> | null): HobbiesType {
     return {
       name: value?.name ?? null,
-      lastName: value?.lastName ?? null,
-      age: value?.age ?? null,
-      address: value?.address ?? null,
-      hobbies: value?.hobbies ?? null,
+      description: value?.description ?? null,
+      order: value?.order ?? null,
     };
   }
 
-  validate(control: AbstractControl<AttendantType>): ValidationErrors | null {
+  validate(control: AbstractControl<HobbiesType>): ValidationErrors | null {
     if (control.valid && this.form.valid) {
       return null;
     }
     let errors: Record<string, ValidationErrors> = {};
     errors = this.addControlErrors(errors, 'name');
-    errors = this.addControlErrors(errors, 'lastName');
-    errors = this.addControlErrors(errors, 'age');
-    errors = this.addControlErrors(errors, 'address');
-    errors = this.addControlErrors(errors, 'hobbies');
-    return { attendant: { message: 'Attendant is not valid', errors } };
+    errors = this.addControlErrors(errors, 'description');
+    errors = this.addControlErrors(errors, 'order');
+    return { hobbies: { message: 'Hobbies is not valid', errors } };
   }
 
   addControlErrors(
@@ -209,19 +187,9 @@ export class CustomNativeFormAttendantComponent
     if (this.formGroupDirective) {
       const resetFormFunc: Function = this.formGroupDirective.resetForm;
       this.formGroupDirective.resetForm = () => {
-        this.hobbiesFormArray.clear();
         this.formRef?.resetForm();
         resetFormFunc.apply(this.formGroupDirective, arguments);
       };
     }
-  }
-
-  // FormArray methods
-  public addHobbies(): void {
-    this.hobbiesFormArray.push(new FormControl(null));
-  }
-
-  public deleteHobbies(hobbiesIndex: number): void {
-    this.hobbiesFormArray.removeAt(hobbiesIndex);
   }
 }

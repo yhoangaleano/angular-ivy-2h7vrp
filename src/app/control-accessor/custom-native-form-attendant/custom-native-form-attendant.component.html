@@ -23,14 +23,44 @@
       <show-errors [control]="form | getControlFrom: 'age'"></show-errors>
     </div>
 
-    <br>
+    <br />
 
     <div>
+      <h3>Attendant address</h3>
       <custom-native-form-address
         formControlName="address"
         (onBlur)="onTouched()"
       ></custom-native-form-address>
       <show-errors [control]="form | getControlFrom: 'address'"></show-errors>
+    </div>
+
+    <br />
+
+    <div>
+      <h3>Attendant hobbies</h3>
+      <button type="button" (click)="addHobbies()">Add hobbies</button>
+
+      <hr />
+      <ng-container formArrayName="hobbies">
+        <ng-container
+          *ngFor="let hobbiesControl of hobbiesFormControls; let i = index"
+        >
+          <div class="hobbies-form-row">
+            <custom-native-form-hobbies
+              [formControl]="hobbiesControl"
+            ></custom-native-form-hobbies>
+
+            <show-errors [control]="hobbiesControl"></show-errors>
+
+            <button type="button" class="delete-btn" (click)="deleteHobbies(i)">
+              Delete hobbies
+            </button>
+          </div>
+        </ng-container>
+      </ng-container>
+      <hr />
+
+      <show-errors [control]="form | getControlFrom: 'hobbies'"></show-errors>
     </div>
   </fieldset>
 </form>

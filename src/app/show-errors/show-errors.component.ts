@@ -33,8 +33,10 @@ export class ShowErrorsComponent implements OnInit, OnDestroy {
       'The required pattern is: ' + params.requiredPattern,
     years: (params: { message: unknown }) => params.message,
     countryCity: (params: { message: unknown }) => params.message,
-    address: () => 'Address is required',
+    address: (params: { message: unknown }) => params.message,
     attendant: () => 'Attendant is required',
+    hobbies: () => 'Hobbies is required',
+    checkNameExists: () => 'Name exist, change',
     uniqueName: (params: { message: unknown }) => params.message,
     telephoneNumbers: (params: { message: unknown }) => params.message,
     telephoneNumber: (params: { message: unknown }) => params.message,
@@ -51,7 +53,7 @@ export class ShowErrorsComponent implements OnInit, OnDestroy {
     this.formGroupDirective?.ngSubmit
       .pipe(takeUntil(this.unSubscribe$))
       .subscribe((_) => {
-        console.warn(this.formGroupDirective?.form.value);
+        // console.warn(this.formGroupDirective?.form.value);
       });
   }
 
@@ -64,7 +66,7 @@ export class ShowErrorsComponent implements OnInit, OnDestroy {
     return (
       ((this.control &&
         this.control.errors &&
-        (this.control.dirty || this.control.touched)) ||
+        (this.control.dirty && this.control.touched)) ||
         this.formGroupDirective?.submitted) ??
       false
     );

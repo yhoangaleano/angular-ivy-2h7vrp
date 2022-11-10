@@ -1,5 +1,5 @@
 import { ChangeDetectorRef, Component, OnInit, ViewChild } from '@angular/core';
-import { FormControl, FormGroup, NgForm, Validators } from '@angular/forms';
+import { FormArray, FormControl, FormGroup, NgForm, Validators } from '@angular/forms';
 
 @Component({
   selector: 'app-native-form',
@@ -10,6 +10,15 @@ export class NativeFormComponent implements OnInit {
   public formRef!: NgForm;
 
   public form!: FormGroup;
+
+
+  get hobbiesFormArray() {
+    return this.form.get('hobbies') as FormArray;
+  }
+
+  get hobbiesFormControls() {
+    return (this.form.controls["hobbies"] as FormArray).controls as Array<FormControl>;
+  }
 
   constructor(private readonly cd: ChangeDetectorRef) {}
 
@@ -28,17 +37,31 @@ export class NativeFormComponent implements OnInit {
         validators: [Validators.required],
       }),
       address: new FormControl(
-        { street: 'robledo' },
+        { street: 'Calle 10', neighborhood: 'Robledo', city: 'Medellin' },
         { nonNullable: false, validators: [Validators.required] }
       ),
       attendant: new FormControl(null, {
         nonNullable: true,
         validators: [Validators.required],
       }),
+      hobbies: new FormArray<FormControl>(
+        [],
+        [Validators.required]
+      ),
     });
   }
 
+    // FormArray methods
+    public addHobbies(): void {
+      this.hobbiesFormArray.push(new FormControl(null));
+    }
+
+    public deleteHobbies(hobbiesIndex: number): void {
+      this.hobbiesFormArray.removeAt(hobbiesIndex);
+    }
+
   resetForm() {
+    this.hobbiesFormArray.clear();
     this.formRef.resetForm();
     console.log(this.form.value);
   }
