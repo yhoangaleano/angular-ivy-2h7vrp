@@ -23,12 +23,13 @@ import { Subject, takeUntil } from 'rxjs';
 })
 export class ShowErrorsComponent implements OnInit, OnDestroy {
   private static readonly errorMessages: { [key: string]: Function } = {
-    required: () =>
-      'This field is required',
+    required: () => 'This field is required',
     minlength: (params: { requiredLength: unknown }) =>
       'The min number of characters is ' + params.requiredLength,
     maxlength: (params: { requiredLength: unknown }) =>
       'The max allowed number of characters is ' + JSON.stringify(params),
+    min: (params: unknown) => 'The min number is ' + JSON.stringify(params),
+    max: (params: unknown) => 'The max number is ' + JSON.stringify(params),
     pattern: (params: { requiredPattern: unknown }) =>
       'The required pattern is: ' + params.requiredPattern,
     years: (params: { message: unknown }) => params.message,
@@ -66,7 +67,8 @@ export class ShowErrorsComponent implements OnInit, OnDestroy {
     return (
       ((this.control &&
         this.control.errors &&
-        (this.control.dirty && this.control.touched)) ||
+        this.control.dirty &&
+        this.control.touched) ||
         this.formGroupDirective?.submitted) ??
       false
     );

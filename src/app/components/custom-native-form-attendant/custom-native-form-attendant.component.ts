@@ -25,7 +25,7 @@ import {
 import { map, Subject, takeUntil } from 'rxjs';
 
 // Configs
-import { checkNameExists } from '../configs';
+import { checkNameExists } from '../../configs';
 import { HobbiesType } from '../custom-native-form-hobbies';
 
 // Models

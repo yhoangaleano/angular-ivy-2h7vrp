@@ -1,5 +1,16 @@
-import { ChangeDetectorRef, Component, OnInit, ViewChild } from '@angular/core';
-import { FormArray, FormControl, FormGroup, NgForm, Validators } from '@angular/forms';
+import {
+  ChangeDetectorRef,
+  Component,
+  OnInit,
+  ViewChild,
+} from '@angular/core';
+import {
+  FormArray,
+  FormControl,
+  FormGroup,
+  NgForm,
+  Validators,
+} from '@angular/forms';
 
 @Component({
   selector: 'app-native-form',
@@ -11,13 +22,13 @@ export class NativeFormComponent implements OnInit {
 
   public form!: FormGroup;
 
-
   get hobbiesFormArray() {
     return this.form.get('hobbies') as FormArray;
   }
 
   get hobbiesFormControls() {
-    return (this.form.controls["hobbies"] as FormArray).controls as Array<FormControl>;
+    return (this.form.controls['hobbies'] as FormArray)
+      .controls as Array<FormControl>;
   }
 
   constructor(private readonly cd: ChangeDetectorRef) {}
@@ -30,7 +41,7 @@ export class NativeFormComponent implements OnInit {
     return new FormGroup({
       name: new FormControl(null, {
         nonNullable: true,
-        validators: [Validators.required],
+        validators: [Validators.required, Validators.minLength(6)],
       }),
       age: new FormControl(null, {
         nonNullable: true,
@@ -40,25 +51,22 @@ export class NativeFormComponent implements OnInit {
         { street: 'Calle 10', neighborhood: 'Robledo', city: 'Medellin' },
         { nonNullable: false, validators: [Validators.required] }
       ),
+      hobbies: new FormArray<FormControl>([], [Validators.required]),
       attendant: new FormControl(null, {
         nonNullable: true,
         validators: [Validators.required],
       }),
-      hobbies: new FormArray<FormControl>(
-        [],
-        [Validators.required]
-      ),
     });
   }
 
-    // FormArray methods
-    public addHobbies(): void {
-      this.hobbiesFormArray.push(new FormControl(null));
-    }
+  // FormArray methods
+  public addHobbies(): void {
+    this.hobbiesFormArray.push(new FormControl(null));
+  }
 
-    public deleteHobbies(hobbiesIndex: number): void {
-      this.hobbiesFormArray.removeAt(hobbiesIndex);
-    }
+  public deleteHobbies(hobbiesIndex: number): void {
+    this.hobbiesFormArray.removeAt(hobbiesIndex);
+  }
 
   resetForm() {
     this.hobbiesFormArray.clear();

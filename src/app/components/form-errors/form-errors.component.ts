@@ -34,8 +34,8 @@ export type FormErrorType = {
 export type DisplayErrorStrategyType = 'SUBMIT' | 'TOUCHED';
 
 @Component({
-  selector: 'form-errors__item',
-  template: `<small [id]="errorId" class="form-errors__item">
+  selector: 'form-errors-item',
+  template: `<small [id]="errorId" class="form-errors-item">
     {{ error }}
   </small>`,
   encapsulation: ViewEncapsulation.None,

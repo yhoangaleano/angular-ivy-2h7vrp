@@ -20,9 +20,9 @@ import { Subject, takeUntil } from 'rxjs';
 const resolvedPromise = Promise.resolve(null);
 
 @Directive({
-  selector: '[nestableForm]',
+  selector: '[nestable2Form]',
 })
-export class NestableFormDirective implements OnInit, OnDestroy {
+export class NestableForm2Directive implements OnInit, OnDestroy {
   @Input()
   public formGroup!: FormGroup;
 
@@ -41,7 +41,7 @@ export class NestableFormDirective implements OnInit, OnDestroy {
   constructor(
     @SkipSelf()
     @Optional()
-    private parentForm: NestableFormDirective,
+    private parentForm: NestableForm2Directive,
     private injector: Injector
   ) {
     this.isRoot = false;

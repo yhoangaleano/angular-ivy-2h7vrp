@@ -6,9 +6,9 @@
       <custom-native-input
         label="Name"
         formControlName="name"
+        [touchedChangingInput]="true"
       ></custom-native-input>
-      <!-- <show-errors [control]="form | getControlFrom: 'name'"></show-errors> -->
-      <form-errors [control]="form | getControlFrom: 'name'"></form-errors>
+      <form-errors displayErrorStrategy="TOUCHED" controlName="name"></form-errors>
     </div>
 
     <div>

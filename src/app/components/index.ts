@@ -5,14 +5,14 @@ import { CustomNativeInputComponent } from './custom-native-input';
 import { FormErrorsItem, FormErrorsComponent } from './form-errors';
 import { NativeFormComponent } from './native-form/native-form.component';
 
-export const controlAccessorComponents = [
+export const components = [
   CustomNativeFormAddressComponent,
   CustomNativeFormAttendantComponent,
   CustomNativeFormHobbiesComponent,
   CustomNativeInputComponent,
   NativeFormComponent,
   FormErrorsItem,
-  FormErrorsComponent
+  FormErrorsComponent,
 ];
 
 export * from './custom-native-form-address';
