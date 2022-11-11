@@ -67,30 +67,15 @@ export class CustomNativeFormAddressComponent
 
   ngOnInit() {
     this.createForm();
-    this.listenAndReplicateParentSubmit();
-    this.overrideAndReplicateParentResetForm();
+    this.listenSubmitAndResetParentFormGroupDirective();
   }
 
-  public ngOnDestroy(): void {
+  ngOnDestroy(): void {
     this.unSubscribe$.next();
     this.unSubscribe$.complete();
   }
 
-  public onInputBlur(event: Event): void {
-    this.onTouched();
-    this.onBlur.emit(event);
-  }
-
-  public onInputChange(value: Partial<AddressType> | null): void {
-    if (this.touchedChangingInput) {
-      this.onTouched();
-    }
-    this.onInput.emit(value);
-  }
-
-  public registerOnChange(
-    fn: (val: Partial<AddressType> | null) => void
-  ): void {
+  registerOnChange(fn: (val: Partial<AddressType> | null) => void): void {
     this.form.valueChanges
       .pipe(
         takeUntil(this.unSubscribe$),
@@ -108,7 +93,40 @@ export class CustomNativeFormAddressComponent
     this.onTouched = fn;
   }
 
-  public createForm() {
+  writeValue(value: AddressType | null): void {
+    const address = this.createAddress(value);
+    this.form.patchValue(address, { emitEvent: false });
+  }
+
+  setDisabledState(disabled: boolean): void {
+    if (disabled) {
+      this.form.disable();
+    } else {
+      this.form.enable();
+    }
+  }
+
+  validate(control: AbstractControl<AddressType>): ValidationErrors | null {
+    if (control.valid && this.form.valid) {
+      return null;
+    }
+    let errors: Record<string, ValidationErrors> = this.getControlsErrors();
+    return { address: { message: 'Address is not valid', errors } };
+  }
+
+  public onInputBlur(event: Event): void {
+    this.onTouched();
+    this.onBlur.emit(event);
+  }
+
+  public onInputChange(value: Partial<AddressType> | null): void {
+    if (this.touchedChangingInput) {
+      this.onTouched();
+    }
+    this.onInput.emit(value);
+  }
+
+  private createForm() {
     this.form = new FormGroup<AddressFormType>({
       street: new FormControl(null, {
         validators: Validators.required,
@@ -125,19 +143,6 @@ export class CustomNativeFormAddressComponent
     });
   }
 
-  writeValue(value: AddressType | null): void {
-    const address = this.createAddress(value);
-    this.form.patchValue(address, { emitEvent: false });
-  }
-
-  setDisabledState(disabled: boolean): void {
-    if (disabled) {
-      this.form.disable();
-    } else {
-      this.form.enable();
-    }
-  }
-
   private createAddress(value: Partial<AddressType> | null): AddressType {
     return {
       street: value?.street ?? null,
@@ -146,46 +151,40 @@ export class CustomNativeFormAddressComponent
     };
   }
 
-  validate(control: AbstractControl<AddressType>): ValidationErrors | null {
-    if (control.valid && this.form.valid) {
-      return null;
+  private listenSubmitAndResetParentFormGroupDirective() {
+    if (this.formGroupDirective) {
+      this.listenAndReplicateParentSubmit();
+      this.overrideAndReplicateParentResetForm();
     }
-    let errors: Record<string, ValidationErrors> = {};
-    errors = this.addControlErrors(errors, 'street');
-    errors = this.addControlErrors(errors, 'city');
-    errors = this.addControlErrors(errors, 'neighborhood');
-    return { address: { message: 'Address is not valid', errors } };
   }
 
-  addControlErrors(
-    allErrors: Record<string, ValidationErrors>,
-    controlName: string
-  ): Record<string, ValidationErrors> {
-    const errors = { ...allErrors };
-    const controlErrors = this.form.controls[controlName].errors;
-    if (controlErrors) {
-      errors[controlName] = controlErrors;
-    }
+  private getControlsErrors(): Record<string, ValidationErrors> {
+    let errors: Record<string, ValidationErrors> = {};
+    Object.keys(this.form.controls).forEach((controlName) => {
+      const control = this.form.get(controlName);
+      const controlErrors = control?.errors;
+      if (controlErrors) {
+        errors[controlName] = controlErrors;
+      }
+    });
     return errors;
   }
 
   private listenAndReplicateParentSubmit(): void {
-    this.formGroupDirective?.ngSubmit
-      .pipe(takeUntil(this.unSubscribe$))
-      .subscribe({
-        next: () => {
-          this.formRef?.onSubmit(new SubmitEvent('submit'));
-        },
-      });
+    this.formGroupDirective!.ngSubmit.pipe(
+      takeUntil(this.unSubscribe$)
+    ).subscribe({
+      next: () => {
+        this.formRef?.onSubmit(new SubmitEvent('submit'));
+      },
+    });
   }
 
   private overrideAndReplicateParentResetForm(): void {
-    if (this.formGroupDirective) {
-      const resetFormFunc: Function = this.formGroupDirective.resetForm;
-      this.formGroupDirective.resetForm = () => {
-        this.formRef?.resetForm();
-        resetFormFunc.apply(this.formGroupDirective, arguments);
-      };
-    }
+    const resetFormFunc: Function = this.formGroupDirective!.resetForm;
+    this.formGroupDirective!.resetForm = () => {
+      this.formRef?.resetForm();
+      resetFormFunc.apply(this.formGroupDirective!, arguments);
+    };
   }
 }

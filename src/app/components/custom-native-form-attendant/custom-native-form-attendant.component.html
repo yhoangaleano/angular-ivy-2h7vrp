@@ -5,7 +5,7 @@
     <div class="mb-12px">
       <label>Name</label>
       <input type="text" formControlName="name" (blur)="onTouched()" />
-      <show-errors [control]="form | getControlFrom: 'name'"></show-errors>
+      <form-errors [control]="form | getControlFrom: 'name'"></form-errors>
     </div>
 
     <div class="mb-12px">
@@ -14,13 +14,13 @@
         formControlName="lastName"
         (onBlur)="onTouched()"
       ></custom-native-input>
-      <show-errors [control]="form | getControlFrom: 'lastName'"></show-errors>
+      <form-errors [control]="form | getControlFrom: 'lastName'"></form-errors>
     </div>
 
     <div class="mb-12px">
       <label>Age</label>
       <input type="number" formControlName="age" (blur)="onTouched()" />
-      <show-errors [control]="form | getControlFrom: 'age'"></show-errors>
+      <form-errors [control]="form | getControlFrom: 'age'"></form-errors>
     </div>
 
     <br />
@@ -31,7 +31,7 @@
         formControlName="address"
         (onBlur)="onTouched()"
       ></custom-native-form-address>
-      <show-errors [control]="form | getControlFrom: 'address'"></show-errors>
+      <form-errors [control]="form | getControlFrom: 'address'"></form-errors>
     </div>
 
     <br />
@@ -50,7 +50,7 @@
               [formControl]="hobbiesControl"
             ></custom-native-form-hobbies>
 
-            <show-errors [control]="hobbiesControl"></show-errors>
+            <form-errors [control]="hobbiesControl"></form-errors>
 
             <button type="button" class="delete-btn" (click)="deleteHobbies(i)">
               Delete hobbies
@@ -60,7 +60,7 @@
       </ng-container>
       <hr />
 
-      <show-errors [control]="form | getControlFrom: 'hobbies'"></show-errors>
+      <form-errors [control]="form | getControlFrom: 'hobbies'"></form-errors>
     </div>
   </fieldset>
 </form>

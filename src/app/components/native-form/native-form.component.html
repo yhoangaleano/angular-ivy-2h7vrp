@@ -8,13 +8,16 @@
         formControlName="name"
         [touchedChangingInput]="true"
       ></custom-native-input>
-      <form-errors displayErrorStrategy="TOUCHED" controlName="name"></form-errors>
+      <form-errors
+        displayErrorStrategy="TOUCHED"
+        controlName="name"
+      ></form-errors>
     </div>
 
     <div>
       <label>Age:</label>
       <input name="age" formControlName="age" />
-      <show-errors [control]="form | getControlFrom: 'age'"></show-errors>
+      <form-errors [control]="form | getControlFrom: 'age'"></form-errors>
     </div>
 
     <br />
@@ -24,7 +27,7 @@
       <custom-native-form-address
         formControlName="address"
       ></custom-native-form-address>
-      <show-errors [control]="form | getControlFrom: 'address'"></show-errors>
+      <form-errors [control]="form | getControlFrom: 'address'"></form-errors>
     </div>
 
     <br />
@@ -43,7 +46,7 @@
               [formControl]="hobbiesControl"
             ></custom-native-form-hobbies>
 
-            <show-errors [control]="hobbiesControl"></show-errors>
+            <form-errors [control]="hobbiesControl"></form-errors>
 
             <button type="button" class="delete-btn" (click)="deleteHobbies(i)">
               Delete hobbies
@@ -53,7 +56,7 @@
       </ng-container>
       <hr />
 
-      <show-errors [control]="form | getControlFrom: 'hobbies'"></show-errors>
+      <form-errors [control]="form | getControlFrom: 'hobbies'"></form-errors>
     </div>
 
     <br />
@@ -63,7 +66,7 @@
       <custom-native-form-attendant
         formControlName="attendant"
       ></custom-native-form-attendant>
-      <show-errors [control]="form | getControlFrom: 'attendant'"></show-errors>
+      <form-errors [control]="form | getControlFrom: 'attendant'"></form-errors>
     </div>
 
     <br />

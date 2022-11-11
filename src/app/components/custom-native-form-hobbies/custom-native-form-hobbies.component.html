@@ -5,7 +5,7 @@
     <div class="mb-12px">
       <label>Name</label>
       <input type="text" formControlName="name" (blur)="onTouched()" />
-      <show-errors [control]="form | getControlFrom: 'name'"></show-errors>
+      <form-errors [control]="form | getControlFrom: 'name'"></form-errors>
     </div>
 
     <div class="mb-12px">
@@ -15,15 +15,15 @@
         formControlName="description"
         (onBlur)="onTouched($event)"
       ></custom-native-input>
-      <show-errors
+      <form-errors
         [control]="form | getControlFrom: 'description'"
-      ></show-errors>
+      ></form-errors>
     </div>
 
     <div class="mb-12px">
       <label>Order</label>
       <input type="number" formControlName="order" (blur)="onTouched()" />
-      <show-errors [control]="form | getControlFrom: 'order'"></show-errors>
+      <form-errors [control]="form | getControlFrom: 'order'"></form-errors>
     </div>
   </fieldset>
 </form>

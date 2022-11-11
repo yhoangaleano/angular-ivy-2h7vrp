@@ -47,7 +47,7 @@ export class FormErrorsItem {
 
 @Component({
   selector: 'form-errors',
-  template: ` <ng-container #viewContainerRef></ng-container> `,
+  template: `<div><ng-container #viewContainerRef></ng-container></div>`,
   viewProviders: [
     { provide: ControlContainer, useExisting: FormGroupDirective },
   ],
@@ -66,7 +66,8 @@ export class FormErrorsComponent
         'The required pattern is: ' + params.requiredPattern,
       years: (params: { message: unknown }) => params.message,
       countryCity: (params: { message: unknown }) => params.message,
-      address: (params: { message: unknown }) => params.message,
+      address: (params: { message: unknown }) =>
+        params.message + ' ' + JSON.stringify(params),
       attendant: 'Attendant is required',
       hobbies: 'Hobbies is required',
       checkNameExists: () => 'Name exist, change',

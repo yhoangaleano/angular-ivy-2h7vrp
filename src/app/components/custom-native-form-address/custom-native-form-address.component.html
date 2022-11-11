@@ -5,16 +5,16 @@
     <div class="mb-12px">
       <label>Street</label>
       <input type="text" formControlName="street" (blur)="onTouched()" />
-      <show-errors [control]="form | getControlFrom: 'street'"></show-errors>
+      <form-errors [control]="form | getControlFrom: 'street'"></form-errors>
     </div>
 
 
     <div class="mb-12px">
       <label>Neighborhood</label>
       <input type="text" formControlName="neighborhood" (blur)="onTouched()" />
-      <show-errors
+      <form-errors
         [control]="form | getControlFrom: 'neighborhood'"
-      ></show-errors>
+      ></form-errors>
     </div>
 
     <div class="mb-12px">
@@ -24,7 +24,7 @@
         formControlName="city"
         (onBlur)="onTouched($event)"
       ></custom-native-input>
-      <show-errors [control]="form | getControlFrom: 'city'"></show-errors>
+      <form-errors [control]="form | getControlFrom: 'city'"></form-errors>
     </div>
 
   </fieldset>
