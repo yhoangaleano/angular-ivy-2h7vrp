@@ -103,7 +103,7 @@ export class NestableForm2Directive implements OnInit, OnDestroy {
       .pipe(takeUntil(this.unSubscribe$))
       .subscribe({
         next: () => {
-          this.formGroupDirective?.onSubmit(new SubmitEvent('submit'));
+          this.formGroupDirective?.onSubmit(new Event(''));
         },
       });
   }

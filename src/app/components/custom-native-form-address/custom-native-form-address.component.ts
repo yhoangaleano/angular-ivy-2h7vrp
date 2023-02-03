@@ -175,7 +175,7 @@ export class CustomNativeFormAddressComponent
       takeUntil(this.unSubscribe$)
     ).subscribe({
       next: () => {
-        this.formRef?.onSubmit(new SubmitEvent('submit'));
+        this.formRef?.onSubmit(new Event(''));
       },
     });
   }

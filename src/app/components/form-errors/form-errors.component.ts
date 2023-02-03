@@ -11,6 +11,7 @@ import {
   ViewContainerRef,
   ViewEncapsulation,
   AfterViewInit,
+  ChangeDetectorRef,
 } from '@angular/core';
 import {
   AbstractControl,
@@ -95,6 +96,7 @@ export class FormErrorsComponent
   private subjectErrors$: BehaviorSubject<string | null>;
 
   constructor(
+    private readonly cd: ChangeDetectorRef,
     @Optional() private readonly formGroupDirective?: FormGroupDirective
   ) {
     this.displayErrorStrategy = 'SUBMIT';
@@ -176,6 +178,7 @@ export class FormErrorsComponent
     const instanceComponent = this.refComponent.instance;
     instanceComponent.error = error;
     instanceComponent.errorId = '';
+    this.cd.detectChanges();
   }
 
   private doNotShowError(): void {
