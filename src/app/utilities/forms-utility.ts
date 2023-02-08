@@ -29,7 +29,7 @@ export class FormsUtility<T> {
   }
 
   public getControl(nameControl: string): AbstractControl {
-    return this.formRef.form.get(nameControl) as AbstractControl;
+    return this.formRef.form.get(nameControl) ;
   }
 
   public isValidateForm(): boolean {

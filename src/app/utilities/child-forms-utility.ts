@@ -34,7 +34,7 @@ export class ChildFormsUtility {
   }
 
   private listenAndReplicateParentSubmit(): void {
-    this.formGroupDirective!.ngSubmit.pipe(
+    this.formGroupDirective.ngSubmit.pipe(
       takeUntil(this.unSubscribe$)
     ).subscribe({
       next: () => {
@@ -44,11 +44,11 @@ export class ChildFormsUtility {
   }
 
   private overrideAndReplicateParentResetForm(callback: Function): void {
-    const resetFormFunc: Function = this.formGroupDirective!.resetForm;
-    this.formGroupDirective!.resetForm = (value?: unknown) => {
+    const resetFormFunc: Function = this.formGroupDirective.resetForm;
+    this.formGroupDirective.resetForm = (value?: unknown) => {
       callback();
       this.formRef.resetForm();
-      resetFormFunc.apply(this.formGroupDirective!, value);
+      resetFormFunc.apply(this.formGroupDirective, value);
     };
   }
 }
