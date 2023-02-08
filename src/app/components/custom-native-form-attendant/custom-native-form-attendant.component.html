@@ -14,7 +14,7 @@
         formControlName="lastName"
         (onBlur)="onTouched()"
       ></custom-native-input>
-      <form-errors [control]="form | getControlFrom: 'lastName'"></form-errors>
+      <form-errors [control]="form | getControlFrom: 'lastName'" displayErrorStrategy="TOUCHED"></form-errors>
     </div>
 
     <div class="mb-12px">

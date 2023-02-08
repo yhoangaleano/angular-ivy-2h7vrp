@@ -8,6 +8,7 @@ import {
   EventEmitter,
   ViewChild,
   Optional,
+  AfterViewInit,
 } from '@angular/core';
 import {
   NG_VALUE_ACCESSOR,
@@ -26,6 +27,12 @@ import { map, Subject, takeUntil } from 'rxjs';
 // Models
 import { HobbiesFormType, HobbiesType } from './models';
 
+// Interface
+import {
+  ChildFormsUtility,
+  ChildFormsUtilityInterface,
+} from './../../utilities/child-forms-utility';
+
 @Component({
   selector: 'custom-native-form-hobbies',
   templateUrl: './custom-native-form-hobbies.component.html',
@@ -43,7 +50,12 @@ import { HobbiesFormType, HobbiesType } from './models';
   ],
 })
 export class CustomNativeFormHobbiesComponent
-  implements OnInit, OnDestroy, ControlValueAccessor
+  implements
+    OnInit,
+    AfterViewInit,
+    OnDestroy,
+    ControlValueAccessor,
+    ChildFormsUtilityInterface
 {
   @Input() public touchedChangingInput: boolean;
 
@@ -57,6 +69,7 @@ export class CustomNativeFormHobbiesComponent
 
   public form!: FormGroup;
   public onTouched!: Function;
+  public childFormsUtility!: ChildFormsUtility;
 
   constructor(@Optional() public formGroupDirective?: FormGroupDirective) {
     this.touchedChangingInput = false;
@@ -67,8 +80,15 @@ export class CustomNativeFormHobbiesComponent
 
   ngOnInit() {
     this.createForm();
-    this.listenAndReplicateParentSubmit();
-    this.overrideAndReplicateParentResetForm();
+  }
+
+  ngAfterViewInit(): void {
+    this.childFormsUtility = new ChildFormsUtility(
+      this.unSubscribe$,
+      this.formRef,
+      this.formGroupDirective
+    );
+    this.childFormsUtility.listenSubmitAndResetParentFormGroupDirective();
   }
 
   public ngOnDestroy(): void {
@@ -154,42 +174,8 @@ export class CustomNativeFormHobbiesComponent
     if (control.valid && this.form.valid) {
       return null;
     }
-    let errors: Record<string, ValidationErrors> = {};
-    errors = this.addControlErrors(errors, 'name');
-    errors = this.addControlErrors(errors, 'description');
-    errors = this.addControlErrors(errors, 'order');
+    let errors: Record<string, ValidationErrors> =
+      this.childFormsUtility?.getControlsErrors() ?? {};
     return { hobbies: { message: 'Hobbies is not valid', errors } };
-  }
-
-  addControlErrors(
-    allErrors: Record<string, ValidationErrors>,
-    controlName: string
-  ): Record<string, ValidationErrors> {
-    const errors = { ...allErrors };
-    const controlErrors = this.form.controls[controlName].errors;
-    if (controlErrors) {
-      errors[controlName] = controlErrors;
-    }
-    return errors;
-  }
-
-  private listenAndReplicateParentSubmit(): void {
-    this.formGroupDirective?.ngSubmit
-      .pipe(takeUntil(this.unSubscribe$))
-      .subscribe({
-        next: () => {
-          this.formRef?.onSubmit(new Event(''));
-        },
-      });
-  }
-
-  private overrideAndReplicateParentResetForm(): void {
-    if (this.formGroupDirective) {
-      const resetFormFunc: Function = this.formGroupDirective.resetForm;
-      this.formGroupDirective.resetForm = () => {
-        this.formRef?.resetForm();
-        resetFormFunc.apply(this.formGroupDirective, arguments);
-      };
-    }
   }
 }

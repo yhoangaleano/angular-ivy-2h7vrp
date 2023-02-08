@@ -8,6 +8,7 @@ import {
   EventEmitter,
   ViewChild,
   Optional,
+  AfterViewInit,
 } from '@angular/core';
 import {
   NG_VALUE_ACCESSOR,
@@ -26,6 +27,12 @@ import { map, Subject, takeUntil } from 'rxjs';
 // Models
 import { AddressFormType, AddressType } from './models';
 
+// Interface
+import {
+  ChildFormsUtility,
+  ChildFormsUtilityInterface,
+} from './../../utilities/child-forms-utility';
+
 @Component({
   selector: 'custom-native-form-address',
   templateUrl: './custom-native-form-address.component.html',
@@ -43,7 +50,12 @@ import { AddressFormType, AddressType } from './models';
   ],
 })
 export class CustomNativeFormAddressComponent
-  implements OnInit, OnDestroy, ControlValueAccessor
+  implements
+    OnInit,
+    AfterViewInit,
+    OnDestroy,
+    ControlValueAccessor,
+    ChildFormsUtilityInterface
 {
   @Input() public touchedChangingInput: boolean;
 
@@ -57,6 +69,7 @@ export class CustomNativeFormAddressComponent
 
   public form!: FormGroup;
   public onTouched!: Function;
+  public childFormsUtility!: ChildFormsUtility;
 
   constructor(@Optional() public formGroupDirective?: FormGroupDirective) {
     this.touchedChangingInput = false;
@@ -67,7 +80,15 @@ export class CustomNativeFormAddressComponent
 
   ngOnInit() {
     this.createForm();
-    this.listenSubmitAndResetParentFormGroupDirective();
+  }
+
+  ngAfterViewInit(): void {
+    this.childFormsUtility = new ChildFormsUtility(
+      this.unSubscribe$,
+      this.formRef,
+      this.formGroupDirective
+    );
+    this.childFormsUtility.listenSubmitAndResetParentFormGroupDirective();
   }
 
   ngOnDestroy(): void {
@@ -110,7 +131,8 @@ export class CustomNativeFormAddressComponent
     if (control.valid && this.form.valid) {
       return null;
     }
-    let errors: Record<string, ValidationErrors> = this.getControlsErrors();
+    let errors: Record<string, ValidationErrors> =
+      this.childFormsUtility?.getControlsErrors() ?? {};
     return { address: { message: 'Address is not valid', errors } };
   }
 
@@ -148,43 +170,6 @@ export class CustomNativeFormAddressComponent
       street: value?.street ?? null,
       city: value?.city ?? null,
       neighborhood: value?.neighborhood ?? null,
-    };
-  }
-
-  private listenSubmitAndResetParentFormGroupDirective() {
-    if (this.formGroupDirective) {
-      this.listenAndReplicateParentSubmit();
-      this.overrideAndReplicateParentResetForm();
-    }
-  }
-
-  private getControlsErrors(): Record<string, ValidationErrors> {
-    let errors: Record<string, ValidationErrors> = {};
-    Object.keys(this.form.controls).forEach((controlName) => {
-      const control = this.form.get(controlName);
-      const controlErrors = control?.errors;
-      if (controlErrors) {
-        errors[controlName] = controlErrors;
-      }
-    });
-    return errors;
-  }
-
-  private listenAndReplicateParentSubmit(): void {
-    this.formGroupDirective!.ngSubmit.pipe(
-      takeUntil(this.unSubscribe$)
-    ).subscribe({
-      next: () => {
-        this.formRef?.onSubmit(new Event(''));
-      },
-    });
-  }
-
-  private overrideAndReplicateParentResetForm(): void {
-    const resetFormFunc: Function = this.formGroupDirective!.resetForm;
-    this.formGroupDirective!.resetForm = () => {
-      this.formRef?.resetForm();
-      resetFormFunc.apply(this.formGroupDirective!, arguments);
     };
   }
 }

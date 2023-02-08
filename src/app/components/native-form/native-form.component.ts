@@ -1,4 +1,5 @@
 import {
+  AfterViewInit,
   ChangeDetectorRef,
   Component,
   OnInit,
@@ -12,15 +13,21 @@ import {
   Validators,
 } from '@angular/forms';
 
+// Interface
+import { FormsUtility, FormsUtilityInterface } from './../../utilities';
+
 @Component({
   selector: 'app-native-form',
   templateUrl: './native-form.component.html',
 })
-export class NativeFormComponent implements OnInit {
+export class NativeFormComponent
+  implements OnInit, AfterViewInit, FormsUtilityInterface<any>
+{
   @ViewChild('formRef')
   public formRef!: NgForm;
 
   public form!: FormGroup;
+  public formsUtility!: FormsUtility<any>;
 
   get hobbiesFormArray() {
     return this.form.get('hobbies') as FormArray;
@@ -35,6 +42,10 @@ export class NativeFormComponent implements OnInit {
 
   ngOnInit() {
     this.form = this.createForm();
+  }
+
+  ngAfterViewInit(): void {
+    this.formsUtility = new FormsUtility<any>(this.formRef);
   }
 
   public createForm(): FormGroup {
@@ -68,13 +79,17 @@ export class NativeFormComponent implements OnInit {
     this.hobbiesFormArray.removeAt(hobbiesIndex);
   }
 
-  resetForm() {
+  public clearHobbies(): void {
     this.hobbiesFormArray.clear();
-    this.formRef.resetForm();
-    console.log(this.form.value);
+  }
+
+  resetForm() {
+    this.formsUtility.resetForm(() => this.clearHobbies());
+    this.cd.detectChanges();
   }
 
   submit() {
-    console.log(this.form.value);
+    console.log(this.formsUtility.getFormData());
+    console.log(this.formsUtility.getFormRawData());
   }
 }

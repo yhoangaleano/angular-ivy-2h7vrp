@@ -8,6 +8,7 @@ import {
   EventEmitter,
   ViewChild,
   Optional,
+  AfterViewInit,
 } from '@angular/core';
 import {
   NG_VALUE_ACCESSOR,
@@ -31,6 +32,12 @@ import { HobbiesType } from '../custom-native-form-hobbies';
 // Models
 import { AttendantFormType, AttendantType } from './models';
 
+// Interface
+import {
+  ChildFormsUtility,
+  ChildFormsUtilityInterface,
+} from './../../utilities';
+
 @Component({
   selector: 'custom-native-form-attendant',
   templateUrl: './custom-native-form-attendant.component.html',
@@ -48,7 +55,12 @@ import { AttendantFormType, AttendantType } from './models';
   ],
 })
 export class CustomNativeFormAttendantComponent
-  implements OnInit, OnDestroy, ControlValueAccessor
+  implements
+    OnInit,
+    AfterViewInit,
+    OnDestroy,
+    ControlValueAccessor,
+    ChildFormsUtilityInterface
 {
   @Input() public touchedChangingInput: boolean;
 
@@ -62,13 +74,15 @@ export class CustomNativeFormAttendantComponent
 
   public form!: FormGroup;
   public onTouched!: Function;
+  public childFormsUtility!: ChildFormsUtility;
 
   get hobbiesFormArray() {
     return this.form.get('hobbies') as FormArray;
   }
 
   get hobbiesFormControls() {
-    return (this.form.controls["hobbies"] as FormArray).controls as Array<FormControl>;
+    return (this.form.controls['hobbies'] as FormArray)
+      .controls as Array<FormControl>;
   }
 
   constructor(@Optional() public formGroupDirective?: FormGroupDirective) {
@@ -80,8 +94,15 @@ export class CustomNativeFormAttendantComponent
 
   ngOnInit() {
     this.createForm();
-    this.listenAndReplicateParentSubmit();
-    this.overrideAndReplicateParentResetForm();
+  }
+
+  ngAfterViewInit(): void {
+    this.childFormsUtility = new ChildFormsUtility(
+      this.unSubscribe$,
+      this.formRef,
+      this.formGroupDirective
+    );
+    this.childFormsUtility.listenSubmitAndResetParentFormGroupDirective(() => this.clearHobbies());
   }
 
   public ngOnDestroy(): void {
@@ -174,46 +195,9 @@ export class CustomNativeFormAttendantComponent
     if (control.valid && this.form.valid) {
       return null;
     }
-    let errors: Record<string, ValidationErrors> = {};
-    errors = this.addControlErrors(errors, 'name');
-    errors = this.addControlErrors(errors, 'lastName');
-    errors = this.addControlErrors(errors, 'age');
-    errors = this.addControlErrors(errors, 'address');
-    errors = this.addControlErrors(errors, 'hobbies');
+    let errors: Record<string, ValidationErrors> =
+      this.childFormsUtility?.getControlsErrors() ?? {};
     return { attendant: { message: 'Attendant is not valid', errors } };
-  }
-
-  addControlErrors(
-    allErrors: Record<string, ValidationErrors>,
-    controlName: string
-  ): Record<string, ValidationErrors> {
-    const errors = { ...allErrors };
-    const controlErrors = this.form.controls[controlName].errors;
-    if (controlErrors) {
-      errors[controlName] = controlErrors;
-    }
-    return errors;
-  }
-
-  private listenAndReplicateParentSubmit(): void {
-    this.formGroupDirective?.ngSubmit
-      .pipe(takeUntil(this.unSubscribe$))
-      .subscribe({
-        next: () => {
-          this.formRef?.onSubmit(new Event(''));
-        },
-      });
-  }
-
-  private overrideAndReplicateParentResetForm(): void {
-    if (this.formGroupDirective) {
-      const resetFormFunc: Function = this.formGroupDirective.resetForm;
-      this.formGroupDirective.resetForm = () => {
-        this.hobbiesFormArray.clear();
-        this.formRef?.resetForm();
-        resetFormFunc.apply(this.formGroupDirective, arguments);
-      };
-    }
   }
 
   // FormArray methods
@@ -223,5 +207,9 @@ export class CustomNativeFormAttendantComponent
 
   public deleteHobbies(hobbiesIndex: number): void {
     this.hobbiesFormArray.removeAt(hobbiesIndex);
+  }
+
+  public clearHobbies() {
+    this.hobbiesFormArray.clear();
   }
 }
