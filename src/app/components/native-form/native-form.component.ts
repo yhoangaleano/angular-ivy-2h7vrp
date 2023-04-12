@@ -84,7 +84,18 @@ export class NativeFormComponent
   }
 
   resetForm() {
-    this.formsUtility.resetForm(() => this.clearHobbies());
+    this.formsUtility.resetForm(() => this.clearHobbies(), {
+      name: 'Yhoan Galeano',
+      age: 25,
+      attendant: {
+        name: 'Andres',
+        address: {
+          city: 'Pereira CIudad',
+          neighborhood: 'Cartago',
+          street: 'Calle 10',
+        },
+      },
+    });
     this.cd.detectChanges();
   }
 

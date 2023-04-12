@@ -13,11 +13,12 @@ export class ChildFormsUtility {
   ) {}
 
   public listenSubmitAndResetParentFormGroupDirective(
-    callback: Function = () => {}
+    callback: Function = () => {},
+    value?: unknown
   ) {
     if (this.formGroupDirective) {
       this.listenAndReplicateParentSubmit();
-      this.overrideAndReplicateParentResetForm(callback);
+      this.overrideAndReplicateParentResetForm(callback, value);
     }
   }
 
@@ -34,21 +35,26 @@ export class ChildFormsUtility {
   }
 
   private listenAndReplicateParentSubmit(): void {
-    this.formGroupDirective.ngSubmit.pipe(
-      takeUntil(this.unSubscribe$)
-    ).subscribe({
-      next: () => {
-        this.formRef.onSubmit(new Event(''));
-      },
-    });
+    this.formGroupDirective.ngSubmit
+      .pipe(takeUntil(this.unSubscribe$))
+      .subscribe({
+        next: () => {
+          this.formRef.onSubmit(new Event(''));
+        },
+      });
   }
 
-  private overrideAndReplicateParentResetForm(callback: Function): void {
+  private overrideAndReplicateParentResetForm(
+    callback: Function,
+    childValue?: unknown
+  ): void {
     const resetFormFunc: Function = this.formGroupDirective.resetForm;
-    this.formGroupDirective.resetForm = (value?: unknown) => {
+    this.formGroupDirective.resetForm = (
+      parentValue: unknown = resetFormFunc.valueOf()
+    ) => {
       callback();
-      this.formRef.resetForm();
-      resetFormFunc.apply(this.formGroupDirective, value);
+      this.formRef.resetForm(childValue);
+      resetFormFunc.apply(this.formGroupDirective, [parentValue]);
     };
   }
 }

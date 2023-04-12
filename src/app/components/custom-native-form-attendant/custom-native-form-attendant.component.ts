@@ -102,7 +102,9 @@ export class CustomNativeFormAttendantComponent
       this.formRef,
       this.formGroupDirective
     );
-    this.childFormsUtility.listenSubmitAndResetParentFormGroupDirective(() => this.clearHobbies());
+    this.childFormsUtility.listenSubmitAndResetParentFormGroupDirective(() =>
+      this.clearHobbies()
+    );
   }
 
   public ngOnDestroy(): void {

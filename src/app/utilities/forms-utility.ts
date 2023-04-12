@@ -19,7 +19,10 @@ export class FormsUtility<T> {
     this.getControl(nameControl)!.setValue(value);
   }
 
-  public setValueAndDisabledControl<Z = unknown>(nameControl: string, value: Z): void {
+  public setValueAndDisabledControl<Z = unknown>(
+    nameControl: string,
+    value: Z
+  ): void {
     this.disabledControl(nameControl);
     this.setValueInControl(nameControl, value);
   }
@@ -29,7 +32,7 @@ export class FormsUtility<T> {
   }
 
   public getControl(nameControl: string): AbstractControl {
-    return this.formRef.form.get(nameControl) ;
+    return this.formRef.form.get(nameControl);
   }
 
   public isValidateForm(): boolean {
@@ -40,9 +43,9 @@ export class FormsUtility<T> {
     this.formRef.onSubmit(new Event(''));
   }
 
-  public resetForm(callback: () => void = () => {}) {
+  public resetForm(callback: () => void = () => {}, value?: unknown) {
     callback();
-    this.formRef.resetForm();
+    this.formRef.resetForm(value);
   }
 
   public submitAndIsValidateForm(): boolean {
